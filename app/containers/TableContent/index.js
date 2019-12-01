@@ -25,13 +25,9 @@ export function TableContent(props) {
 
   // if no data return null
   if (!tableContent.data) {
-    return null;
+    return 'Empty Data';
   }
 
-  // if columnHeaders and rowData empty then return
-  if (!tableContent.data.columnHeaders || !tableContent.data.rowData) {
-    return null;
-  }
 
   const { columnHeaders, rowData } = tableContent.data;
   const { filterData } = tableContent;
@@ -65,54 +61,80 @@ export function TableContent(props) {
 
   return (
     <div>
-      <div style={{ padding: 10, float: 'left' }}>
+      <div style={{padding: 10, float: 'left'}}>
         <input
           onKeyUp={e => dispatch(filterByTable(e.target.value, filterInColumn))}
           placeholder="Search"
         />
       </div>
-      <div style={{ padding: 10 }}>
+      <div style={{padding: 10}}>
         <select onChange={e => setFilterInColumn(e.target.value)}>
           <option value="">Filter by column</option>
-          {columnHeaders
-            .filter(c => c.filterable === 'true')
-            .map(m => (
-              <option key={m.id} value={m.id}>
-                {m.label}
-              </option>
-            ))}
+          {columnHeaders && columnHeaders.length
+            ? columnHeaders
+              .filter(c => c.filterable === 'true')
+              .map(m => (
+                <option key={m.id} value={m.id}>
+                  {m.label}
+                </option>
+              ))
+            : ''}
         </select>
       </div>
-      <table>
+      <table style={{width: '100%', borderCollapse: 'collapse'}}>
         <thead>
-          <tr>
-            {columnHeaders.map(c => (
-              <th key={c.id} onClick={() => sortColumn(c)}>
-                {c.label}
-                {c.sortable === 'true' ? arrow(c.id) : ''}
-              </th>
-            ))}
-          </tr>
+        <tr>
+          {columnHeaders &&
+          columnHeaders.length ?
+          columnHeaders.map(c => (
+            <th
+              key={c.id}
+              onClick={() => sortColumn(c)}
+              style={{
+                textAlign: 'left',
+                padding: '10px',
+                border: '1px solid #dddddd',
+                cursor: 'pointer',
+              }}
+            >
+              {c.label}
+              {c.sortable === 'true' ? arrow(c.id) : ''}
+            </th>
+          )): ''}
+        </tr>
         </thead>
         <tbody>
-          {rData && rData.length ? (
-            rData.map(key => (
-              <tr key={key.id}>
-                {columnHeaders.map(vv => (
-                  <td key={vv.id}>{key[vv.id]}</td>
-                ))}
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td
-                colSpan={columnHeaders.length}
-                style={{ padding: 20, textAlign: 'center' }}
-              >
-                No Records
-              </td>
+        {rData && rData.length ? (
+          rData.map(key => (
+            <tr key={key.id}>
+              {columnHeaders.map(vv => (
+                <td
+                  key={vv.id}
+                  style={{
+                    textAlign: 'left',
+                    padding: '10px',
+                    border: '1px solid #dddddd',
+                  }}
+                >
+                  {key[vv.id] || '-'}
+                </td>
+              ))}
             </tr>
-          )}
+          ))
+        ) : (
+          <tr>
+            <td
+              colSpan={columnHeaders.length}
+              style={{
+                padding: 20,
+                textAlign: 'center',
+                border: '1px solid #dddddd',
+              }}
+            >
+              No Records
+            </td>
+          </tr>
+        )}
         </tbody>
       </table>
     </div>

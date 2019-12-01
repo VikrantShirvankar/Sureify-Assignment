@@ -3,14 +3,14 @@
  */
 
 import { combineReducers } from 'redux';
-import tableContentReducer from 'containers/TableContent/reducer';
+import TableContentReducer from './containers/TableContent/reducer';
 
 /**
  * Merges the main reducer with the router state and dynamically injected reducers
  */
 export default function createReducer(injectedReducers = {}) {
   return combineReducers({
-    TableContent: tableContentReducer,
+    TableContent: TableContentReducer,
     ...injectedReducers,
   });
 }
