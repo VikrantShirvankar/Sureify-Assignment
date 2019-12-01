@@ -1,6 +1,6 @@
 /*
  *
- * LanguageProvider reducer
+ * TableContent reducer
  *
  */
 
@@ -21,21 +21,32 @@ const TableContentReducer = (state = initialState, action) => {
       // eslint-disable-next-line no-case-declarations
       let tempData = [];
       const filterableColumn = [];
-      action.data.columnHeaders
-        .filter(f => f.filterable === 'true')
-        .forEach(n => filterableColumn.push(n.id));
-      // eslint-disable-next-line array-callback-return
-      action.data.rowData.map(key => {
-        let tempObj = {};
+
+      // if data is empty then return current state
+      if (!action.data || (action.data && !Object.keys(action.data).length)) {
+        return { ...state, data: null };
+      }
+
+      if (action.data.columnHeaders && action.data.columnHeaders.length) {
+        action.data.columnHeaders
+          .filter(f => f.filterable === 'true')
+          .forEach(n => filterableColumn.push(n.id));
+      }
+
+      if (action.data.rowData && action.data.rowData.length) {
         // eslint-disable-next-line array-callback-return
-        Object.keys(key.data).map(c => {
-          tempObj = {
-            ...tempObj,
-            [key.data[c].id]: key.data[c].value,
-          };
+        action.data.rowData.map(key => {
+          let tempObj = {};
+          // eslint-disable-next-line array-callback-return
+          Object.keys(key.data).map(c => {
+            tempObj = {
+              ...tempObj,
+              [key.data[c].id]: key.data[c].value,
+            };
+          });
+          tempData = [...tempData, { id: key.id, ...tempObj }];
         });
-        tempData = [...tempData, { id: key.id, ...tempObj }];
-      });
+      }
       return {
         ...state,
         filterableColumn,

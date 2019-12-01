@@ -15,31 +15,40 @@ import { setInitialData, sortByColumn, filterByTable } from './actions';
  */
 export function TableContent(props) {
   const { dispatch } = props;
+
   useEffect(() => {
     dispatch(setInitialData(props.data));
   }, []);
 
   const [filterInColumn, setFilterInColumn] = useState('');
   const { tableContent } = props;
+
+  // if no data return null
   if (!tableContent.data) {
     return null;
   }
-  if (!tableContent.data.columnHeaders && !tableContent.data.rowData) {
+
+  // if columnHeaders and rowData empty then return
+  if (!tableContent.data.columnHeaders || !tableContent.data.rowData) {
     return null;
   }
+
   const { columnHeaders, rowData } = tableContent.data;
   const { filterData } = tableContent;
   let rData = rowData;
 
-  const sortColumn = d => {
-    if (d.sortable === 'true') {
-      dispatch(sortByColumn(d.id));
+  const sortColumn = column => {
+    if (column.sortable === 'true') {
+      dispatch(sortByColumn(column.id));
     }
   };
 
+  // if filter data is not empty
   if (filterData) {
     rData = filterData;
   }
+
+  // function to render sort column arrow
   const arrow = column => {
     const { sortOrder, sortByColumn: col } = props.tableContent;
     if (column === col) {
@@ -53,6 +62,7 @@ export function TableContent(props) {
       </span>
     );
   };
+
   return (
     <div>
       <div style={{ padding: 10, float: 'left' }}>
